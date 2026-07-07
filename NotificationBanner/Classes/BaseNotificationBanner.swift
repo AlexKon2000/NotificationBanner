@@ -397,15 +397,13 @@ open class BaseNotificationBanner: UIView {
 
             if let parentViewController = parentViewController, parentViewController.view != nil {
                 parentViewController.view.addSubview(self)
-                if statusBarShouldBeShown() {
-                    appWindow?.windowLevel = UIWindow.Level.normal
-                }
             } else {
                 appWindow?.addSubview(self)
+
                 if statusBarShouldBeShown() && !(parentViewController == nil && bannerPosition == .top) {
-                    appWindow?.windowLevel = UIWindow.Level.normal
+                    resetWindowLevelIfNeeded()
                 } else {
-                    appWindow?.windowLevel = UIWindow.Level.statusBar + 1
+                    elevateWindowLevelIfNeeded()
                 }
             }
 
