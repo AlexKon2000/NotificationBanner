@@ -605,7 +605,7 @@ open class BaseNotificationBanner: UIView {
 
             self.bannerQueue.showNext(callback: { (isEmpty) in
                 if isEmpty || self.statusBarShouldBeShown() {
-                    self.appWindow?.windowLevel = UIWindow.Level.normal
+                     self.resetWindowLevelIfNeeded()
                 }
             })
         }
@@ -659,6 +659,32 @@ open class BaseNotificationBanner: UIView {
         }
 
         return true
+    }
+
+    private func elevateWindowLevelIfNeeded() {
+       guard parentViewController == nil else { return }
+
+       UIView.performWithoutAnimation {
+           CATransaction.begin()
+           CATransaction.setDisableActions(true)
+           appWindow?.windowLevel = UIWindow.Level.statusBar + 1
+           CATransaction.commit()
+       }
+    }
+
+    private func resetWindowLevelIfNeeded() {
+        guard parentViewController == nil else { return }
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else { return }
+
+            UIView.performWithoutAnimation {
+                CATransaction.begin()
+                CATransaction.setDisableActions(true)
+                self.appWindow?.windowLevel = UIWindow.Level.normal
+                CATransaction.commit()
+            }
+        }
     }
     
     /**
